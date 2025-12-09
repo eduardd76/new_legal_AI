@@ -21,21 +21,50 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Login attempt started', { email })
     setLoading(true)
     setError(null)
 
     try {
+      // Check if supabase client is initialized
+      if (!supabase) {
+        throw new Error('Authentication service not initialized')
+      }
+
+      console.log('Calling Supabase signInWithPassword...')
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (error) throw error
+      console.log('Supabase response:', { data, error })
 
+      if (error) {
+        console.error('Supabase auth error:', error)
+
+        // Check for specific error types
+        if (error.message?.includes('Email not confirmed')) {
+          throw new Error('Please confirm your email address before signing in. Check your inbox for the confirmation link.')
+        }
+        if (error.message?.includes('Invalid login credentials')) {
+          throw new Error('Invalid email or password. Please check your credentials and try again.')
+        }
+
+        throw error
+      }
+
+      if (!data?.session) {
+        console.error('No session returned')
+        throw new Error('Login failed: No session created. Please try again or contact support.')
+      }
+
+      console.log('Login successful, redirecting to dashboard...')
       // Use window.location for full page reload to ensure cookies are sent
       window.location.href = '/dashboard'
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in')
+      console.error('Login error caught:', err)
+      const errorMessage = err.message || 'Failed to sign in. Please try again.'
+      setError(errorMessage)
       setLoading(false)
     }
   }
