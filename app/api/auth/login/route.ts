@@ -25,10 +25,13 @@ export async function POST(request: NextRequest) {
             return request.cookies.getAll()
           },
           setAll(cookies) {
+            console.log('[API v2 setAll] Called with', cookies.length, 'cookies')
             // Collect all cookies that Supabase wants to set
             cookies.forEach((cookie) => {
+              console.log('[API v2 setAll] Cookie:', cookie.name)
               cookiesToSet.push(cookie)
             })
+            console.log('[API v2 setAll] Total collected:', cookiesToSet.length)
           },
         },
       }
