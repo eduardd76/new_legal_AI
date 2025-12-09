@@ -1,5 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +13,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
+    const cookieStore = await cookies()
+
+    // Create response first
+    const response = NextResponse.json({ success: true })
+
+    // Create Supabase client with proper cookie handling
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+              response.cookies.set(name, value, options)
+            })
+          },
+        },
+      }
+    )
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -49,10 +72,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Session cookies are automatically set by the Supabase server client
+    console.log('Login successful, cookies set in response')
+
+    // Return response with cookies
     return NextResponse.json({
       success: true,
       user: data.user,
+    }, {
+      headers: response.headers,
     })
   } catch (error: any) {
     console.error('Unexpected login error:', error)
