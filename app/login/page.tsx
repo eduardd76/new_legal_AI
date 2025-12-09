@@ -58,7 +58,13 @@ export default function LoginPage() {
         throw new Error('Login failed: No session created. Please try again or contact support.')
       }
 
-      console.log('Login successful, redirecting to dashboard...')
+      console.log('Login successful, waiting for cookies to be set...')
+
+      // Wait for cookies to be written to browser storage before redirecting
+      // This prevents the middleware from not seeing the session on the next request
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      console.log('Redirecting to dashboard...')
       // Use window.location for full page reload to ensure cookies are sent
       window.location.href = '/dashboard'
     } catch (err: any) {
