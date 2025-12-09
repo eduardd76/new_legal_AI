@@ -2,8 +2,12 @@
 -- FIX: Remove infinite recursion in users table policies
 -- ============================================
 
--- Step 1: Drop the problematic admin policy
+-- Step 1: Drop ALL existing policies to start fresh
 DROP POLICY IF EXISTS "Admins can manage users" ON public.users;
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.users;
+DROP POLICY IF EXISTS "Admins can read all users" ON public.users;
+DROP POLICY IF EXISTS "Admins can update all users" ON public.users;
+DROP POLICY IF EXISTS "Admins can delete users" ON public.users;
 
 -- Step 2: Add INSERT policy for new user signups
 CREATE POLICY "Users can insert own profile" ON public.users
