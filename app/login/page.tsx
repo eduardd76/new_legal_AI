@@ -32,11 +32,10 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      router.push('/dashboard')
-      router.refresh()
+      // Use window.location for full page reload to ensure cookies are sent
+      window.location.href = '/dashboard'
     } catch (err: any) {
       setError(err.message || 'Failed to sign in')
-    } finally {
       setLoading(false)
     }
   }
