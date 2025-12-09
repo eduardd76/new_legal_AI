@@ -76,11 +76,10 @@ export async function POST(request: NextRequest) {
     console.log('[API v2] Cookies to set:', cookiesToSet.length)
     console.log('[API v2] Cookie names:', cookiesToSet.map(c => c.name))
 
-    // Create success response
-    const response = NextResponse.json({
-      success: true,
-      user: data.user,
-    })
+    // Create redirect response to dashboard
+    // Server-side redirect ensures cookies are set before navigation
+    const redirectUrl = new URL('/dashboard', request.url)
+    const response = NextResponse.redirect(redirectUrl)
 
     // Apply all cookies to the response
     cookiesToSet.forEach(({ name, value, options }) => {
@@ -88,7 +87,7 @@ export async function POST(request: NextRequest) {
       response.cookies.set(name, value, options)
     })
 
-    console.log('[API v2] Response created with', cookiesToSet.length, 'cookies')
+    console.log('[API v2] Response created with', cookiesToSet.length, 'cookies and redirect to /dashboard')
     return response
   } catch (error: any) {
     console.error('Unexpected login error:', error)

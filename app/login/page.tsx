@@ -36,10 +36,22 @@ export default function LoginPage() {
         },
         body: JSON.stringify({ email, password }),
         credentials: 'include', // Ensure cookies are sent/received
+        redirect: 'follow', // Follow redirects automatically
       })
 
       console.log('[LOGIN v2] API response status:', response.status)
+      console.log('[LOGIN v2] Response was redirected:', response.redirected)
+      console.log('[LOGIN v2] Final URL:', response.url)
 
+      // Check if response is a redirect or success
+      if (response.redirected || response.url.includes('/dashboard')) {
+        // Server redirected us to dashboard - cookies are set, reload page
+        console.log('[LOGIN v2] SUCCESS! Server redirected to dashboard')
+        window.location.href = '/dashboard'
+        return
+      }
+
+      // If not redirected, check for JSON error response
       const data = await response.json()
       console.log('[LOGIN v2] API response data:', data)
 
@@ -47,9 +59,8 @@ export default function LoginPage() {
         throw new Error(data.error || 'Failed to sign in')
       }
 
+      // Should not reach here, but redirect anyway
       console.log('[LOGIN v2] SUCCESS! Redirecting to dashboard...')
-
-      // Cookies are now set server-side, safe to redirect
       window.location.href = '/dashboard'
     } catch (err: any) {
       console.error('[LOGIN v2] ERROR:', err)
