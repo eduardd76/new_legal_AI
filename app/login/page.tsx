@@ -26,49 +26,30 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      // Check if supabase client is initialized
-      if (!supabase) {
-        throw new Error('Authentication service not initialized')
-      }
+      console.log('Calling server-side login API...')
 
-      console.log('Calling Supabase signInWithPassword...')
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      // Call server-side login API which handles auth and sets cookies properly
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       })
 
-      console.log('Supabase response:', { data, error })
+      const data = await response.json()
+      console.log('Login API response:', { status: response.status, data })
 
-      if (error) {
-        console.error('Supabase auth error:', error)
-
-        // Check for specific error types
-        if (error.message?.includes('Email not confirmed')) {
-          throw new Error('Please confirm your email address before signing in. Check your inbox for the confirmation link.')
-        }
-        if (error.message?.includes('Invalid login credentials')) {
-          throw new Error('Invalid email or password. Please check your credentials and try again.')
-        }
-
-        throw error
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to sign in')
       }
 
-      if (!data?.session) {
-        console.error('No session returned')
-        throw new Error('Login failed: No session created. Please try again or contact support.')
-      }
+      console.log('Login successful! Cookies set by server. Redirecting...')
 
-      console.log('Login successful, waiting for cookies to be set...')
-
-      // Wait for cookies to be written to browser storage before redirecting
-      // This prevents the middleware from not seeing the session on the next request
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      console.log('Redirecting to dashboard...')
-      // Use window.location for full page reload to ensure cookies are sent
+      // Cookies are now set server-side, safe to redirect
       window.location.href = '/dashboard'
     } catch (err: any) {
-      console.error('Login error caught:', err)
+      console.error('Login error:', err)
       const errorMessage = err.message || 'Failed to sign in. Please try again.'
       setError(errorMessage)
       setLoading(false)
