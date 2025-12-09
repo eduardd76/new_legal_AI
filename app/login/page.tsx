@@ -21,12 +21,12 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Login attempt started', { email })
+    console.log('[LOGIN v2] Starting login process...', { email })
     setLoading(true)
     setError(null)
 
     try {
-      console.log('Calling server-side login API...')
+      console.log('[LOGIN v2] Calling server-side API: /api/auth/login')
 
       // Call server-side login API which handles auth and sets cookies properly
       const response = await fetch('/api/auth/login', {
@@ -35,21 +35,24 @@ export default function LoginPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Ensure cookies are sent/received
       })
 
+      console.log('[LOGIN v2] API response status:', response.status)
+
       const data = await response.json()
-      console.log('Login API response:', { status: response.status, data })
+      console.log('[LOGIN v2] API response data:', data)
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to sign in')
       }
 
-      console.log('Login successful! Cookies set by server. Redirecting...')
+      console.log('[LOGIN v2] SUCCESS! Redirecting to dashboard...')
 
       // Cookies are now set server-side, safe to redirect
       window.location.href = '/dashboard'
     } catch (err: any) {
-      console.error('Login error:', err)
+      console.error('[LOGIN v2] ERROR:', err)
       const errorMessage = err.message || 'Failed to sign in. Please try again.'
       setError(errorMessage)
       setLoading(false)
