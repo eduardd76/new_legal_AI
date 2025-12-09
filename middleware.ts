@@ -1,12 +1,13 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Middleware v2 - Updated with comprehensive logging
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
-  console.log(`[Middleware] ${pathname} - Checking auth...`)
+  console.log(`[Middleware v2] ${pathname} - Checking auth...`)
 
   const allCookies = request.cookies.getAll()
-  console.log(`[Middleware] Incoming cookies:`, allCookies.map(c => c.name))
+  console.log(`[Middleware v2] Incoming cookies (${allCookies.length}):`, allCookies.map(c => c.name))
 
   let supabaseResponse = NextResponse.next({
     request,
@@ -36,9 +37,9 @@ export async function middleware(request: NextRequest) {
   // Refresh session if expired
   const { data: { user }, error } = await supabase.auth.getUser()
 
-  console.log(`[Middleware] ${pathname} - User:`, user ? `${user.email} (${user.id})` : 'null')
+  console.log(`[Middleware v2] ${pathname} - User:`, user ? `${user.email} (${user.id})` : 'null')
   if (error) {
-    console.error(`[Middleware] ${pathname} - Auth error:`, error.message)
+    console.error(`[Middleware v2] ${pathname} - Auth error:`, error.message)
   }
 
   // Protect routes that require authentication
@@ -48,11 +49,11 @@ export async function middleware(request: NextRequest) {
   )
 
   if (isProtectedRoute && !user) {
-    console.log(`[Middleware] ${pathname} - REDIRECTING to /login (no user)`)
+    console.log(`[Middleware v2] ${pathname} - REDIRECTING to /login (no user)`)
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  console.log(`[Middleware] ${pathname} - Allowing access`)
+  console.log(`[Middleware v2] ${pathname} - Allowing access`)
   return supabaseResponse
 }
 

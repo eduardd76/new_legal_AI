@@ -69,7 +69,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Login successful, setting', cookiesToSet.length, 'cookies')
+    console.log('[API v2] Login successful!')
+    console.log('[API v2] Cookies to set:', cookiesToSet.length)
+    console.log('[API v2] Cookie names:', cookiesToSet.map(c => c.name))
 
     // Create success response
     const response = NextResponse.json({
@@ -79,9 +81,11 @@ export async function POST(request: NextRequest) {
 
     // Apply all cookies to the response
     cookiesToSet.forEach(({ name, value, options }) => {
+      console.log('[API v2] Setting cookie:', name, 'with options:', options)
       response.cookies.set(name, value, options)
     })
 
+    console.log('[API v2] Response created with', cookiesToSet.length, 'cookies')
     return response
   } catch (error: any) {
     console.error('Unexpected login error:', error)
