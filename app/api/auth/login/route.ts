@@ -1,6 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,30 +12,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const cookieStore = await cookies()
+    // Collect cookies that Supabase wants to set
+    const cookiesToSet: Array<{ name: string; value: string; options: any }> = []
 
-    // Create response first
-    const response = NextResponse.json({ success: true })
-
-    // Create Supabase client with proper cookie handling
+    // Create Supabase client with cookie collection
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
           getAll() {
-            return cookieStore.getAll()
+            return request.cookies.getAll()
           },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options)
-              response.cookies.set(name, value, options)
+          setAll(cookies) {
+            // Collect all cookies that Supabase wants to set
+            cookies.forEach((cookie) => {
+              cookiesToSet.push(cookie)
             })
           },
         },
       }
     )
 
+    // Attempt login
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -45,7 +43,6 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Login error:', error)
 
-      // Return specific error messages
       if (error.message?.includes('Email not confirmed')) {
         return NextResponse.json(
           { error: 'Please confirm your email address before signing in.' },
@@ -72,15 +69,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Login successful, cookies set in response')
+    console.log('Login successful, setting', cookiesToSet.length, 'cookies')
 
-    // Return response with cookies
-    return NextResponse.json({
+    // Create success response
+    const response = NextResponse.json({
       success: true,
       user: data.user,
-    }, {
-      headers: response.headers,
     })
+
+    // Apply all cookies to the response
+    cookiesToSet.forEach(({ name, value, options }) => {
+      response.cookies.set(name, value, options)
+    })
+
+    return response
   } catch (error: any) {
     console.error('Unexpected login error:', error)
     return NextResponse.json(
