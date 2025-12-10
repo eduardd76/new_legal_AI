@@ -1,0 +1,68 @@
+================================================================================
+ULTRA-DEBUG: PRODUCTION ANALYSIS TESTING
+================================================================================
+Time: 2025-12-10T14:00:46.163Z
+URL: https://contract-review-ai.vercel.app
+File: Draft contract mentenanta _ ANONOM.docx
+================================================================================
+
+
+[STEP 1] Logging in...
+🖥️  CONSOLE: [verbose] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o
+🖥️  CONSOLE: [log] [LOGIN v2] Starting login process... {email: eduard@gmail.com}
+🖥️  CONSOLE: [log] [LOGIN v2] Calling server-side API: /api/auth/login
+📤 REQUEST: POST https://contract-review-ai.vercel.app/api/auth/login
+🖥️  CONSOLE: [log] [LOGIN v2] API response status: 200
+🖥️  CONSOLE: [log] [LOGIN v2] Response was redirected: true
+🖥️  CONSOLE: [log] [LOGIN v2] Final URL: https://contract-review-ai.vercel.app/dashboard
+🖥️  CONSOLE: [log] [LOGIN v2] SUCCESS! Server redirected to dashboard
+✅ Login successful
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+
+[STEP 2] Uploading document...
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+✅ File selected
+📤 REQUEST: POST https://contract-review-ai.vercel.app/api/documents/upload
+✅ Upload clicked
+📥 RESPONSE: 200 https://contract-review-ai.vercel.app/api/documents/upload
+   Body (first 500 chars): {"success":true,"document":{"id":"e44aa0db-fdc4-4d0f-9c1b-e9c2696574cf","user_id":"bfd3921f-b9cc-4d83-837b-0499f313640a","organization_id":null,"filename":"Draft contract mentenanta _ ANONOM.docx","file_size":76083,"file_type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document","storage_path":"bfd3921f-b9cc-4d83-837b-0499f313640a/1765375261656-lvp8n4.docx","contract_type":null,"detected_language":"ro","status":"processing","page_count":null,"word_count":null,"has_scanned_pa
+
+[STEP 3] Finding uploaded document...
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+Found 3 document links
+Opening document: /dashboard/documents/e44aa0db-fdc4-4d0f-9c1b-e9c2696574cf
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: [error] Failed to load resource: the server responded with a status of 404 ()
+✅ Document ID: e44aa0db-fdc4-4d0f-9c1b-e9c2696574cf
+
+[STEP 4] 🔍 TRIGGERING ANALYSIS - MONITORING CLOSELY...
+================================================================================
+❌ Analyze button not found!
+Saved page content to debug-prod-no-button.html
+
+================================================================================
+📊 FINAL REPORT:
+================================================================================
+Network Logs: 4 entries
+Console Logs: 23 entries
+Page Errors: 0 entries
+
+✅ All logs saved to:
+   - debug-prod-network-logs.json
+   - debug-prod-console-logs.json
+   - debug-prod-page-errors.json
+   - debug-prod-*.png (screenshots)
+================================================================================
+
+⏳ Keeping browser open for 10 seconds for manual inspection...

@@ -1,0 +1,94 @@
+[
+  {
+    "time": "2025-12-10T14:00:47.488Z",
+    "log": "[verbose] [DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o"
+  },
+  {
+    "time": "2025-12-10T14:00:50.310Z",
+    "log": "[log] [LOGIN v2] Starting login process... {email: eduard@gmail.com}"
+  },
+  {
+    "time": "2025-12-10T14:00:50.312Z",
+    "log": "[log] [LOGIN v2] Calling server-side API: /api/auth/login"
+  },
+  {
+    "time": "2025-12-10T14:00:54.587Z",
+    "log": "[log] [LOGIN v2] API response status: 200"
+  },
+  {
+    "time": "2025-12-10T14:00:54.587Z",
+    "log": "[log] [LOGIN v2] Response was redirected: true"
+  },
+  {
+    "time": "2025-12-10T14:00:54.587Z",
+    "log": "[log] [LOGIN v2] Final URL: https://contract-review-ai.vercel.app/dashboard"
+  },
+  {
+    "time": "2025-12-10T14:00:54.588Z",
+    "log": "[log] [LOGIN v2] SUCCESS! Server redirected to dashboard"
+  },
+  {
+    "time": "2025-12-10T14:00:55.680Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:00:55.842Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:00:55.857Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:00:55.891Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:00:56.320Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:00:56.334Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:00:56.346Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:00:56.353Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:01:07.106Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:01:07.148Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:01:07.217Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:01:07.247Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:01:13.486Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:01:13.518Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:01:13.532Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+    "time": "2025-12-10T14:01:13.532Z",
+    "log": "[error] Failed to load resource: the server responded with a status of 404 ()"
+  }
+]
