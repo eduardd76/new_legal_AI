@@ -65,26 +65,46 @@ export async function POST(request: NextRequest) {
     }
 
     // Create document record
+    console.log('[UPLOAD] Creating document record for user:', user.id)
+
+    const documentData: any = {
+      user_id: user.id,
+      filename: file.name,
+      file_size: file.size,
+      file_type: file.type,
+      storage_path: filePath,
+      status: 'uploading', // Valid enum: uploading|processing|analyzed|failed|archived
+    }
+
+    // Only add organization_id if it exists (not all users have organizations)
+    if (user.organization_id) {
+      documentData.organization_id = user.organization_id
+    }
+
+    console.log('[UPLOAD] Document data:', JSON.stringify(documentData, null, 2))
+
     const { data: document, error: dbError } = await supabase
       .from('documents')
-      .insert({
-        user_id: user.id,
-        organization_id: user.organization_id,
-        filename: file.name,
-        file_size: file.size,
-        file_type: file.type,
-        storage_path: filePath,
-        status: 'uploaded', // Fast upload - extraction happens on analyze
-      })
+      .insert(documentData)
       .select()
       .single()
 
     if (dbError) {
-      console.error('Database error:', dbError)
+      console.error('[UPLOAD] Database error details:', JSON.stringify({
+        message: dbError.message,
+        details: dbError.details,
+        hint: dbError.hint,
+        code: dbError.code
+      }, null, 2))
+
       // Clean up uploaded file
       await supabase.storage.from('documents').remove([filePath])
+
       return NextResponse.json(
-        { error: 'Failed to create document record' },
+        {
+          error: 'Failed to create document record',
+          details: dbError.message
+        },
         { status: 500 }
       )
     }
