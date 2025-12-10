@@ -9,7 +9,13 @@ const ALLOWED_TYPES = [
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
 ]
 
+// Vercel route configuration - increase timeout for text extraction
+export const runtime = 'nodejs'
+export const maxDuration = 60 // 60 seconds - requires Vercel Pro plan (Hobby plan limited to 10s)
+
 export async function POST(request: NextRequest) {
+  console.log('[UPLOAD] Request received at', new Date().toISOString())
+
   try {
     const user = await requireAuth()
     const supabase = await createClient()

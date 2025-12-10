@@ -6,6 +6,7 @@ import { extractTextFromPDF, extractTextFromDOCX, parseDocumentStructure } from 
 import { withTimeout, TIMEOUTS, TimeoutError } from '@/lib/utils/timeout'
 
 // Vercel serverless function configuration
+export const runtime = 'nodejs'
 export const maxDuration = 60 // Maximum duration in seconds (Vercel Pro limit)
 
 export async function POST(
