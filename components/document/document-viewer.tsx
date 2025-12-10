@@ -29,24 +29,48 @@ interface DocumentViewerProps {
 export function DocumentViewer({ document, analysis, comments, clauses }: DocumentViewerProps) {
   const router = useRouter()
   const [analyzing, setAnalyzing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null)
 
   const handleAnalyze = async () => {
     setAnalyzing(true)
+    setError(null)
     try {
+      console.log('[UI] Starting analysis for document:', document.id)
+      const startTime = Date.now()
+
       const response = await fetch(`/api/documents/${document.id}/analyze`, {
         method: 'POST',
       })
-      
+
+      const duration = Date.now() - startTime
+      console.log('[UI] Analysis response received in', duration, 'ms')
+
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Analysis failed')
+        const errorData = await response.json()
+        console.error('[UI] Analysis failed:', errorData)
+
+        // Show user-friendly error messages
+        let errorMessage = errorData.error || 'Analysis failed'
+
+        if (errorData.error_type === 'timeout') {
+          errorMessage += '\n\nTip: Try simplifying your document or reducing its size.'
+        }
+
+        throw new Error(errorMessage)
       }
+
+      const result = await response.json()
+      console.log('[UI] Analysis successful:', result)
 
       // Refresh page to show results
       router.refresh()
     } catch (error: any) {
-      alert(`Analysis failed: ${error.message}`)
+      console.error('[UI] Analysis error:', error)
+      setError(error.message)
+
+      // Show error in alert as well
+      alert(`Analysis failed:\n\n${error.message}`)
     } finally {
       setAnalyzing(false)
     }
@@ -71,6 +95,16 @@ export function DocumentViewer({ document, analysis, comments, clauses }: Docume
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col gap-4">
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="whitespace-pre-wrap">
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>

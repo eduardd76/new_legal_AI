@@ -17,15 +17,16 @@ npm run build            # Production build (~8s, generates 12 routes)
 npm start                # Start production server
 
 # Testing & Quality
-npm test                 # Run Playwright tests
+npm test                 # Run all Playwright tests
 npm run lint             # Run ESLint
-npx playwright test --ui # Run tests with UI
-npx playwright install   # Install test browsers (first time)
+npx playwright test --ui # Run tests with interactive UI
+npx playwright test auth.spec.ts  # Run specific test file
+npx playwright install   # Install test browsers (first time only)
 ```
 
 ## Environment Setup
 
-Required variables in `.env.local`:
+Copy `.env.example` to `.env.local` and configure:
 
 ```bash
 # Supabase (required for auth/storage/database)
@@ -34,9 +35,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-key
 
 # AI Provider (choose one or use mock)
-AI_PROVIDER=claude-sonnet-4  # or gpt-4 or mock
+AI_PROVIDER=claude-sonnet-4  # Options: claude-sonnet-4, gpt-4, mock
+AI_FALLBACK_PROVIDER=gpt-4   # Optional fallback provider
 ANTHROPIC_API_KEY=sk-ant-your-key
 OPENAI_API_KEY=sk-your-key
+
+# Optional: Legislative database (mock in MVP)
+LEGISLATIVE_DB_MODE=mock
 ```
 
 ## Architecture
@@ -100,13 +105,15 @@ app/
 │   │       └── export/page.tsx           # Export options
 │   └── profile/page.tsx                  # User profile
 └── api/
-    ├── auth/logout/route.ts              # Logout endpoint
+    ├── auth/
+    │   ├── login/route.ts                # Login endpoint
+    │   └── logout/route.ts               # Logout endpoint
     └── documents/
         ├── upload/route.ts               # Upload + text extraction
         └── [id]/analyze/route.ts         # AI analysis endpoint
 ```
 
-Protected routes use `middleware.ts` to redirect unauthenticated users to `/login`.
+**Protected Routes:** `middleware.ts` uses `@supabase/ssr` to check authentication and redirects unauthenticated users from `/dashboard/*` to `/login`. The middleware refreshes sessions automatically and logs auth state for debugging.
 
 ### Type System
 
@@ -152,20 +159,25 @@ UI components use `lib/utils.ts:cn()` for className merging with tailwind-merge.
 
 Playwright tests in `tests/` directory:
 
-- **Test suites:** auth.spec.ts, navigation.spec.ts, document-upload.spec.ts
-- **Run pattern:** Tests use mock data, don't require real Supabase
-- **Coverage targets:** >80% for critical flows
+- **Test suites:** `auth.spec.ts` (authentication flows), `e2e-complete.spec.ts` (full workflows)
+- **Configuration:** `playwright.config.ts` - runs dev server automatically, uses Chromium
+- **Run pattern:** Tests start dev server on port 3000, use `http://localhost:3000` as base URL
+- **Coverage targets:** >80% for critical flows (auth, upload, analysis)
 
+Run specific tests: `npx playwright test auth.spec.ts`
+Debug mode: `npx playwright test --debug`
 See `TESTING_GUIDE.md` for comprehensive testing checklist.
 
 ## Database Migrations
 
-When modifying database schema:
+**Manual SQL execution** - no automated migration system in MVP:
 
-1. Edit `supabase/schema.sql` or `supabase/rls_policies.sql`
-2. Run in Supabase SQL Editor or via CLI
-3. Update types in `lib/types/database.ts` to match
-4. No automated migration system in MVP - manual SQL execution
+1. Edit schema: `supabase/schema.sql` (tables, indexes, functions)
+2. Edit RLS policies: `supabase/rls_policies.sql` (row-level security)
+3. Run SQL in Supabase SQL Editor or via Supabase CLI
+4. Update TypeScript types in `lib/types/database.ts` to match
+
+**Important:** Multiple RLS policy files exist (`rls_policies_fix.sql`, `rls_policies_fixed.sql`, `rls_policies_idempotent.sql`) representing iterative fixes. Use `rls_policies.sql` as the canonical source. The idempotent version uses `DROP POLICY IF EXISTS` for safe re-runs.
 
 ## Performance Targets
 
@@ -205,3 +217,32 @@ Analysis results are flexible JSON. To add structured categories:
 - **Multi-tenancy:** Organization support built-in but not fully activated in MVP
 - **RAG System:** Embeddings table + pgvector ready for legislative database integration
 - **Mock Mode:** Set `AI_PROVIDER=mock` for testing without API costs
+
+## Debugging
+
+### Authentication Issues
+
+The middleware has comprehensive logging. Check console output for:
+- `[Middleware v2] {pathname} - Checking auth...` - Shows which routes are checked
+- `[Middleware v2] User: {email}` - Confirms user session state
+- `[Middleware v2] REDIRECTING to /login` - Shows auth failures
+
+Common auth issues in this project:
+1. **Email confirmation required:** Supabase requires email verification by default. See `DISABLE_EMAIL_CONFIRMATION.md` for setup
+2. **RLS policies:** Row-level security issues. Check `supabase/rls_policies.sql` and verify users can insert/read their own data
+3. **Cookie issues:** Middleware manages cookies automatically via `@supabase/ssr`
+
+### Development Server Issues
+
+- **Port conflicts:** Dev server uses port 3000. Kill existing processes: `npx kill-port 3000`
+- **Build errors:** Run `npm run build` to catch type errors before deployment
+- **Cache issues:** Delete `.next` directory and rebuild
+
+## Project Documentation
+
+See these files for additional context:
+- `DEPLOYMENT.md` - Production deployment guide
+- `TESTING_GUIDE.md` - Comprehensive test checklist
+- `TASKS.md` - Implementation roadmap
+- `DISABLE_EMAIL_CONFIRMATION.md` - Supabase email setup
+- `SESSION_SUMMARY.md` - Latest development session notes

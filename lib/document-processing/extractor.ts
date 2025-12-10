@@ -1,6 +1,7 @@
 import * as pdfParse from 'pdf-parse'
 import mammoth from 'mammoth'
 import { createWorker } from 'tesseract.js'
+import { withTimeout, TIMEOUTS, TimeoutError } from '@/lib/utils/timeout'
 
 export interface ProcessedDocument {
   text: string
@@ -22,18 +23,35 @@ export interface ClauseStructure {
 }
 
 /**
- * Extract text from PDF file
+ * Extract text from PDF file with timeout protection
  */
 export async function extractTextFromPDF(buffer: Buffer): Promise<ProcessedDocument> {
   try {
-    const data = await (pdfParse as any).default(buffer)
-    
-    const text = data.text
+    console.log('[EXTRACT-PDF] Starting extraction, buffer size:', buffer.length)
+    const startTime = Date.now()
+
+    // Wrap PDF parsing in timeout
+    const data = await withTimeout(
+      (pdfParse as any).default(buffer),
+      TIMEOUTS.TEXT_EXTRACTION,
+      'PDF text extraction timed out. The file may be too complex or corrupted.'
+    ) as any // Type assertion for PDF parse result
+
+    const duration = Date.now() - startTime
+    console.log('[EXTRACT-PDF] Extraction completed in', duration, 'ms')
+
+    const text = data.text as string
     const wordCount = text.split(/\s+/).filter((word: string) => word.length > 0).length
-    
+
     // Simple heuristic: if text is very sparse relative to page count, likely scanned
     const avgWordsPerPage = wordCount / data.numpages
     const hasScannedPages = avgWordsPerPage < 50 // Threshold: less than 50 words per page
+
+    console.log('[EXTRACT-PDF] Stats:', {
+      pages: data.numpages,
+      words: wordCount,
+      hasScanned: hasScannedPages
+    })
 
     return {
       text,
@@ -43,19 +61,48 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<ProcessedDocum
       metadata: data.info,
     }
   } catch (error) {
-    console.error('PDF extraction error:', error)
-    throw new Error('Failed to extract text from PDF')
+    if (error instanceof TimeoutError) {
+      console.error('[EXTRACT-PDF] Timeout error:', error.message)
+      throw error
+    }
+    console.error('[EXTRACT-PDF] Extraction error:', error)
+    throw new Error('Failed to extract text from PDF: ' + (error as Error).message)
   }
 }
 
 /**
- * Extract text from DOCX file
+ * Extract text from DOCX file with timeout protection
+ * This is the CRITICAL fix - mammoth.extractRawText was hanging!
  */
 export async function extractTextFromDOCX(buffer: Buffer): Promise<ProcessedDocument> {
   try {
-    const result = await mammoth.extractRawText({ buffer })
+    console.log('[EXTRACT-DOCX] Starting extraction, buffer size:', buffer.length)
+    const startTime = Date.now()
+
+    // CRITICAL FIX: Wrap mammoth extraction in timeout
+    // This was hanging indefinitely on complex DOCX files
+    const result = await withTimeout(
+      mammoth.extractRawText({ buffer }),
+      TIMEOUTS.TEXT_EXTRACTION,
+      'DOCX text extraction timed out. The file may be too complex, corrupted, or contain unsupported features (macros, DRM, etc.)'
+    ) as { value: string; messages: any[] } // Type assertion for mammoth result
+
+    const duration = Date.now() - startTime
+    console.log('[EXTRACT-DOCX] Extraction completed in', duration, 'ms')
+
     const text = result.value
     const wordCount = text.split(/\s+/).filter((word: string) => word.length > 0).length
+
+    console.log('[EXTRACT-DOCX] Stats:', {
+      words: wordCount,
+      textLength: text.length,
+      messages: result.messages?.length || 0
+    })
+
+    // Log any warnings from mammoth
+    if (result.messages && result.messages.length > 0) {
+      console.warn('[EXTRACT-DOCX] Warnings:', result.messages.slice(0, 5))
+    }
 
     return {
       text,
@@ -63,8 +110,12 @@ export async function extractTextFromDOCX(buffer: Buffer): Promise<ProcessedDocu
       hasScannedPages: false, // DOCX files are native text
     }
   } catch (error) {
-    console.error('DOCX extraction error:', error)
-    throw new Error('Failed to extract text from DOCX')
+    if (error instanceof TimeoutError) {
+      console.error('[EXTRACT-DOCX] Timeout error:', error.message)
+      throw error
+    }
+    console.error('[EXTRACT-DOCX] Extraction error:', error)
+    throw new Error('Failed to extract text from DOCX: ' + (error as Error).message)
   }
 }
 
