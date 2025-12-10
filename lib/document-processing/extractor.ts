@@ -1,6 +1,6 @@
 import * as pdfParse from 'pdf-parse'
 import mammoth from 'mammoth'
-import { createWorker } from 'tesseract.js'
+// import { createWorker } from 'tesseract.js' // DISABLED: Causes DOMMatrix error in Vercel (browser-only API)
 import { withTimeout, TIMEOUTS, TimeoutError } from '@/lib/utils/timeout'
 
 export interface ProcessedDocument {
@@ -121,23 +121,24 @@ export async function extractTextFromDOCX(buffer: Buffer): Promise<ProcessedDocu
 
 /**
  * Perform OCR on scanned PDF (simplified for MVP)
+ * DISABLED: tesseract.js causes DOMMatrix error in Vercel (browser-only API)
  */
-export async function performOCR(buffer: Buffer): Promise<string> {
-  try {
-    const worker = await createWorker('eng')
-    
-    // In production, you'd convert PDF pages to images first
-    // For MVP, we'll return a placeholder
-    // This is a complex process requiring pdf-to-image conversion
-    
-    await worker.terminate()
-    
-    return 'OCR functionality will be implemented in full version. For now, please upload native PDF or DOCX files.'
-  } catch (error) {
-    console.error('OCR error:', error)
-    throw new Error('OCR processing failed')
-  }
-}
+// export async function performOCR(buffer: Buffer): Promise<string> {
+//   try {
+//     const worker = await createWorker('eng')
+//
+//     // In production, you'd convert PDF pages to images first
+//     // For MVP, we'll return a placeholder
+//     // This is a complex process requiring pdf-to-image conversion
+//
+//     await worker.terminate()
+//
+//     return 'OCR functionality will be implemented in full version. For now, please upload native PDF or DOCX files.'
+//   } catch (error) {
+//     console.error('OCR error:', error)
+//     throw new Error('OCR processing failed')
+//   }
+// }
 
 /**
  * Parse document structure into clauses
