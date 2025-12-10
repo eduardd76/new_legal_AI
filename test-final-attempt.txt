@@ -1,0 +1,55 @@
+🔍 DEBUGGING UPLOAD ENDPOINT
+================================================================================
+
+[1] Logging in...
+🖥️  CONSOLE: [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o
+🖥️  CONSOLE: [LOGIN v2] Starting login process... {email: eduard@gmail.com}
+🖥️  CONSOLE: [LOGIN v2] Calling server-side API: /api/auth/login
+🖥️  CONSOLE: [LOGIN v2] API response status: 200
+🖥️  CONSOLE: [LOGIN v2] Response was redirected: true
+🖥️  CONSOLE: [LOGIN v2] Final URL: https://contract-review-ai.vercel.app/dashboard
+🖥️  CONSOLE: [LOGIN v2] SUCCESS! Server redirected to dashboard
+✅ Logged in
+
+[2] Checking existing documents...
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+Before upload: 3 documents
+IDs: e44aa0db-fdc4-4d0f-9c1b-e9c2696574cf, b2c2b2be-6ed5-417a-8e15-be31f1dbebe3, 571c5457-1a2e-4a7c-b23b-d869a1abfca8
+
+[3] Uploading document...
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+⏱️  Upload clicked, waiting for response...
+
+📥 UPLOAD API RESPONSE: 405
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 405 ()
+Body: 
+✅ Waited 30s for processing
+
+📊 API Response received:
+{
+  "status": 405,
+  "body": ""
+}
+
+[4] Checking documents list after upload...
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+🖥️  CONSOLE: Failed to load resource: the server responded with a status of 404 ()
+After upload: 3 documents
+IDs: e44aa0db-fdc4-4d0f-9c1b-e9c2696574cf, b2c2b2be-6ed5-417a-8e15-be31f1dbebe3, 571c5457-1a2e-4a7c-b23b-d869a1abfca8
+
+❌ NO NEW DOCUMENT CREATED!
+   Upload may have failed or redirected incorrectly
+
+⏳ Keeping browser open for 5s...

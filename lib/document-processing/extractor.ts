@@ -1,7 +1,8 @@
 import * as pdfParse from 'pdf-parse'
 import mammoth from 'mammoth'
-// import { createWorker } from 'tesseract.js' // DISABLED: Causes DOMMatrix error in Vercel (browser-only API)
 import { withTimeout, TIMEOUTS, TimeoutError } from '@/lib/utils/timeout'
+
+// NOTE: tesseract.js import REMOVED - caused DOMMatrix error in Vercel (browser-only API)
 
 export interface ProcessedDocument {
   text: string
